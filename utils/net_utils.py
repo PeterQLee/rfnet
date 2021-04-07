@@ -3,8 +3,8 @@
 # @Author  : xylon
 import torch
 
-from utils.math_utils import ptCltoCr
-from utils.image_utils import clip_patch
+from rfnet.utils.math_utils import ptCltoCr
+from rfnet.utils.image_utils import clip_patch
 
 
 def pair(

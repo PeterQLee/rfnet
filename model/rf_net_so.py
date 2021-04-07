@@ -3,9 +3,9 @@
 # @Author  : xylon
 import torch
 
-from model.rf_net_module import RFNetModule
-from utils.net_utils import pair
-from utils.image_utils import clip_patch, topk_map
+from rfnet.model.rf_net_module import RFNetModule
+from rfnet.utils.net_utils import pair
+from rfnet.utils.image_utils import clip_patch, topk_map
 
 
 class RFNetSO(RFNetModule):
@@ -176,7 +176,7 @@ class RFNetSO(RFNetModule):
 
         im_des = self.des(im_patches)
 
-        return im_scale, kpts, im_des
+        return im_scale, kpts, im_des, im_score
 
     def detectAndCompute(self, im_path, device, output_size):
         """
@@ -188,7 +188,7 @@ class RFNetSO(RFNetModule):
         """
         import numpy as np
         from skimage import io, color
-        from utils.image_utils import im_rescale
+        from rfnet.utils.image_utils import im_rescale
 
         img = io.imread(im_path)
 
@@ -213,6 +213,44 @@ class RFNetSO(RFNetModule):
         )
 
         # inference
-        _, kp, des = self.inference(img, img_info, img_raw)
+        _, kp, des, score = self.inference(img, img_info, img_raw)
 
-        return kp, des, img
+        return kp, des, img, score
+
+    def detectAndCompute_fromimg(self, img, device, output_size):
+        """
+        detect keypoints and compute its descriptor
+        :param img: image array
+        :param device: cuda or cpu
+        :param output_size: resacle size
+        :return: kp (#keypoints, 4) des (#keypoints, 128)
+        """
+        import numpy as np
+        from skimage import io, color
+        from rfnet.utils.image_utils import im_rescale
+
+
+        # Gray
+        img_raw = img = np.expand_dims(color.rgb2gray(img), -1)
+
+        # Rescale
+        # output_size = (240, 320)
+        img, _, _, sw, sh = im_rescale(img, output_size)
+        img_info = np.array([sh, sw])
+
+        # to tensor
+        # swap color axis because
+        # numpy image: H x W x C
+        # torch image: C X H X W
+        img = torch.from_numpy(img.transpose((2, 0, 1)))[None, :].to(
+            device, dtype=torch.float
+        )
+        img_info = torch.from_numpy(img_info)[None, :].to(device, dtype=torch.float)
+        img_raw = torch.from_numpy(img_raw.transpose((2, 0, 1)))[None, :].to(
+            device, dtype=torch.float
+        )
+
+        # inference
+        _, kp, des, score = self.inference(img, img_info, img_raw)
+
+        return kp, des, img, score

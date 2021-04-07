@@ -5,9 +5,9 @@
 import torch
 import torch.nn as nn
 
-from utils.common_utils import imgBatchXYZ, transXYZ_2_to_1
-from utils.image_utils import warp, filter_border
-from utils.math_utils import MSD, distance_matrix_vector, L2Norm
+from rfnet.utils.common_utils import imgBatchXYZ, transXYZ_2_to_1
+from rfnet.utils.image_utils import warp, filter_border
+from rfnet.utils.math_utils import MSD, distance_matrix_vector, L2Norm
 
 
 class RFNetModule(nn.Module):

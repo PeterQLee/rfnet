@@ -81,7 +81,7 @@ if __name__ == "__main__":
     )
 
     print(f"{gct()} : to device")
-    device = torch.device("cuda")
+    device = torch.device("cpu")
     model = model.to(device)
     resume = args.resume
     print(f"{gct()} : in {resume}")

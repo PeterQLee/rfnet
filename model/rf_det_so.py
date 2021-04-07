@@ -6,9 +6,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from utils.image_utils import soft_nms_3d, soft_max_and_argmax_1d
-from utils.math_utils import L2Norm
-from model.rf_det_module import RFDetModule
+from rfnet.utils.image_utils import soft_nms_3d, soft_max_and_argmax_1d
+from rfnet.utils.math_utils import L2Norm
+from rfnet.model.rf_det_module import RFDetModule
 
 
 class RFDetSO(RFDetModule):

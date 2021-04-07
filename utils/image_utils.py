@@ -5,7 +5,7 @@ import torch
 from torch.nn import functional as F
 from skimage import transform
 
-from utils.math_utils import L2Norm
+from rfnet.utils.math_utils import L2Norm
 
 
 def clip_patch(kpts_byxc, kpts_scale, kpts_ori, im_info, images, PSIZE):
@@ -318,7 +318,7 @@ def soft_nms_3d(scale_logits, ksize, com_strength):
     )  # (B, H, W, 1)
     exp_maps = torch.exp(com_strength * (scale_logits - max_all_scale))  # (B, H, W, C)
     sum_exp = F.conv2d(
-        input=exp_maps.permute(0, 3, 1, 2),
+        input=exp_maps.permute(0, 3, 1, 2).contiguous(),
         weight=exp_maps.new_full([1, num_scales, ksize, ksize], fill_value=1),
         stride=1,
         padding=ksize // 2,
@@ -327,6 +327,7 @@ def soft_nms_3d(scale_logits, ksize, com_strength):
     )  # (B, H, W, 1)
     probs = exp_maps / (sum_exp + 1e-8)
     return probs
+    #sum_exp = F.conv2d(input=exp_maps.permute(0, 3, 1, 2), weight=exp_maps.new_full([1, num_scales, ksize, ksize], fill_value=1), stride=1, padding=ksize // 2,)
 
 
 def soft_max_and_argmax_1d(
@@ -339,11 +340,13 @@ def soft_max_and_argmax_1d(
     :param orint_maps: (B, H, W, 10, 2)
     :param dim: final channel
     :param scale_list: scale space list
-    :param keepdim: kepp dimension
+    :param keepdim: kepp dimensiona
     :param com_strength1: magnify argument of score
     :param com_strength2: magnify argument of scale
     :return: score_map(B, H, W, 1), scale_map(B, H, W, 1), (orint_map(B, H, W, 1, 2))
     """
+    #PL: bugfix com_strength2
+    com_strength2 = com_strength2[0]
     inputs_exp1 = torch.exp(
         com_strength1 * (input - torch.max(input, dim=dim, keepdim=True)[0])
     )

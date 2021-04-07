@@ -5,7 +5,7 @@
 import torch
 import torch.nn as nn
 
-from utils.math_utils import distance_matrix_vector, pairwise_distances
+from rfnet.utils.math_utils import distance_matrix_vector, pairwise_distances
 
 
 class HardNetNeiMask(nn.Module):

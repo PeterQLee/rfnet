@@ -5,7 +5,7 @@ import cv2
 import torch
 import numpy as np
 
-from utils.math_utils import distance_matrix_vector, pairwise_distances, ptCltoCr
+from rfnet.utils.math_utils import distance_matrix_vector, pairwise_distances, ptCltoCr
 
 
 def save_patchpair(patch_pair, name, save, size=None):

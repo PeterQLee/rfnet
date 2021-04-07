@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from utils.image_utils import filter_border, nms, topk_map, get_gauss_filter_weight
+from rfnet.utils.image_utils import filter_border, nms, topk_map, get_gauss_filter_weight
 
 
 class RFDetModule(nn.Module):
